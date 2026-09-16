@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://interview-practice-6y1ahlzek-asjad8834s-projects.vercel.app"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
