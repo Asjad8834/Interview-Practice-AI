@@ -52,9 +52,9 @@ async function registerUser(req, res){
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
-      maxAge: 24*60*60*1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     //Return teh final response to the user
@@ -127,9 +127,9 @@ async function loginUser(req, res){
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
-      maxAge: 24*60*60*1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 24 * 60 * 60 * 1000
     });
 
     // Return the user data
@@ -164,7 +164,15 @@ async function loginUser(req, res){
 async function logOutUser(req, res){
   try{
 
-    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+    let token = req.cookies.token;
+
+    if(!token && req.headers.authorization){
+      const authHeader = req.headers.authorization;
+
+      if(authHeader.startsWith("Bearer ")){
+        token = authHeader.split(" ")[1];
+      }
+    }
 
     if(token){
       await tokenBlackListModel.create({
@@ -172,7 +180,11 @@ async function logOutUser(req, res){
       })
     }
 
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+    });
 
     res.status(200).json({
       success: true,
