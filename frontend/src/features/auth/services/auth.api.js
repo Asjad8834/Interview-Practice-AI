@@ -1,78 +1,72 @@
-import axios from "axios";
-
-/**
- * Since we are repeating the base url and with credentials everywhere
- *  const api = axios.create({
- *                             baseURL: "http://localhost:3000",
- *                             withCredentials: true
- *                           })
- */
-
-/**
- * We can simply do this now
- *  const response = await api.post("/api/auth/register", { username, email, password }) and also no need to put withCredentials: true in every request
- */
+import api from "../../../services/api";
 
 // Register user API
-export async function register({username, email, password}){
-  try{
-    const response = await axios.post("http://localhost:3000/api/auth/register", { 
-      username, email, password // data to be sent
-     }, {
-      withCredentials: true // to send cookies with the request
-   })
+export async function register({ username, email, password }) {
+  try {
+    const response = await api.post("/api/auth/register", {
+      username,
+      email,
+      password,
+    });
 
     return response.data;
-
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error(
+      "Error registering user:",
+      error.response?.data || error.message
+    );
+
     throw error;
   }
 }
 
 // Login user API
-export async function login({ email, password }){
-  try{
-    const response = await axios.post("http://localhost:3000/api/auth/login", { 
-      email, password //data to be sent
-     }, {
-      withCredentials: true
-     })
+export async function login({ email, password }) {
+  try {
+    const response = await api.post("/api/auth/login", {
+      email,
+      password,
+    });
 
-     return response.data;
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error logging in:",
+      error.response?.data || error.message
+    );
 
-  }
-  catch(error){
-    console.log(error);
     throw error;
   }
 }
 
-
-// Log out user APi
-export async function logout(){
-  try{
-    const response = await axios.get("http://localhost:3000/api/auth/logout", { withCredentials: true });
+// Logout user API
+export async function logout() {
+  try {
+    const response = await api.get("/api/auth/logout");
 
     return response.data;
+  } catch (error) {
+    console.error(
+      "Error logging out:",
+      error.response?.data || error.message
+    );
 
-  }
-  catch(error){
-    return console.log(error);
     throw error;
   }
 }
 
-//Get me user APi
-export async function getMe(){
-  try{
-    const response = await axios.get("http://localhost:3000/api/auth/get-me", { withCredentials: true });
+// Get current logged-in user API
+export async function getMe() {
+  try {
+    const response = await api.get("/api/auth/get-me");
 
     return response.data;
+  } catch (error) {
+    console.error(
+      "Error getting current user:",
+      error.response?.data || error.message
+    );
 
-  }
-  catch(error){
-    return console.log(error);
     throw error;
   }
 }

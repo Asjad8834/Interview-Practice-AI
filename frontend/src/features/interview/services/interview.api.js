@@ -1,63 +1,88 @@
-import axios from "axios";
-
-const api = axios.create({
-  baseURL:"http://localhost:3000",
-  withCredentials: true,
-})
+import api from "../../../services/api";
 
 /**
- * @description Service to generate interview report based on user's Seld description, resume and Job description
+ * @description Service to generate interview report based on user's self description,
+ * resume and job description.
  */
+export const generateInterviewReport = async ({
+  jobDescription,
+  selfDescription,
+  resumeFile,
+}) => {
+  try {
+    const formData = new FormData();
 
-export const generateInterviewReport = async ({ jobDescription, selfDescription, resumeFile}) => {
+    formData.append("jobDescription", jobDescription);
+    formData.append("selfDescription", selfDescription);
+    formData.append("resume", resumeFile);
 
-  const formData = new FormData() // to send a file from frontend to backend, we need to use FormData object and set the content type to multipart/form-data
-  formData.append("jobDescription", jobDescription)
-  formData.append("selfDescription", selfDescription)
-  formData.append("resume", resumeFile)
+    const response = await api.post("/api/interview", formData);
 
-  const response = await api.post("/api/interview", formData, {
-    headers:{ "Content-Type": "multipart/form-data" }
-  })
-
-  return response.data
-
-}
-
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error generating interview report:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 /**
  * @description Service to get interview report by interviewId
  */
-
 export const getInterviewReportById = async (interviewId) => {
-  
-  const response = await api.get(`/api/interview/report/${interviewId}`)
+  try {
+    const response = await api.get(
+      `/api/interview/report/${interviewId}`
+    );
 
-  return response.data
-
-}
-
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching interview report:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 /**
- * @description Service to get all interview reports of Logged In user
+ * @description Service to get all interview reports of logged-in user
  */
-
 export const getAllInterviewReports = async () => {
+  try {
+    const response = await api.get("/api/interview/reports");
 
-  const response = await api.get("/api/interview/reports")
-
-  return response.data;
-
-}
-
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error fetching interview reports:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 /**
- * @description Service to generate resume pdf based on user self description, resume content and job description.
+ * @description Service to generate resume PDF based on interview report
  */
 export const generateResumePdf = async ({ interviewReportId }) => {
-    const response = await api.post(`/api/interview/resume/pdf/${interviewReportId}`, null, {
-        responseType: "blob"
-    })
+  try {
+    const response = await api.post(
+      `/api/interview/resume/pdf/${interviewReportId}`,
+      null,
+      {
+        responseType: "blob",
+      }
+    );
 
-    return response.data
-}
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error generating resume PDF:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
