@@ -1,43 +1,52 @@
 const jwt = require("jsonwebtoken");
 const tokenBlackListModel = require("../models/tokenBlackList.model");
 
-async function authUser(req, res, next){
-  try{
+async function authUser(req, res, next) {
+  try {
+    let token = req.cookies.token;
 
-    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+    // If token is not available in cookies,
+    // try getting it from Authorization header
+    if (!token && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
 
-    if(!token){
+      if (authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      }
+    }
+
+    // No token found
+    if (!token) {
       return res.status(401).json({
         success: false,
-        message:"Unauthorized, token missing"
-      })
+        message: "Unauthorized, token missing",
+      });
     }
 
-    // We will check whether or not the token is blacklisted 
+    // Check whether the token is blacklisted
     const isTokenBlackListed = await tokenBlackListModel.findOne({
-      token
+      token,
     });
 
-    if(isTokenBlackListed){
+    if (isTokenBlackListed) {
       return res.status(401).json({
-        message:"Token is Invalid"
-      })
+        success: false,
+        message: "Token is Invalid",
+      });
     }
 
-    // Now we will verify the token
+    // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decoded;
 
     next();
-
-  }
-  catch(error){
+  } catch (error) {
     return res.status(500).json({
       success: false,
-      message:"Internal server error",
-      error: error.message
-    })
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 }
 
