@@ -166,6 +166,9 @@ async function generateResumePdfController(req, res) {
 
   }
   catch(error){
+
+    console.error("Error generating resume PDF:", error);
+
     return res.status(500).json({
       success: false,
       message: "Unexpected error occurred",
