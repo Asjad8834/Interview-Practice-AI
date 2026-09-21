@@ -126,11 +126,18 @@ async function loginUser(req, res){
     }, process.env.JWT_SECRET, {expiresIn: "1d"});
 
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 24 * 60 * 60 * 1000
-    });
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 24 * 60 * 60 * 1000
+      });
+
+      console.log("COOKIE CONFIG:", {
+        nodeEnv: process.env.NODE_ENV,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        hasSetCookieHeader: Boolean(res.getHeader("Set-Cookie")),
+      });
 
     // Return the user data
     return res.status(200).json({
