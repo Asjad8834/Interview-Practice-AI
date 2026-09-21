@@ -1,9 +1,8 @@
 import api from "../../../services/api";
 
-// Register user API
 export async function register({ username, email, password }) {
   try {
-    const response = await api.post("/api/auth/register", {
+    const response = await api.post("/auth/register", {
       username,
       email,
       password,
@@ -20,10 +19,9 @@ export async function register({ username, email, password }) {
   }
 }
 
-// Login user API
 export async function login({ email, password }) {
   try {
-    const response = await api.post("/api/auth/login", {
+    const response = await api.post("/auth/login", {
       email,
       password,
     });
@@ -39,10 +37,9 @@ export async function login({ email, password }) {
   }
 }
 
-// Logout user API
 export async function logout() {
   try {
-    const response = await api.get("/api/auth/logout");
+    const response = await api.get("/auth/logout");
 
     return response.data;
   } catch (error) {
@@ -55,10 +52,9 @@ export async function logout() {
   }
 }
 
-// Get current logged-in user API
 export async function getMe() {
   try {
-    const response = await api.get("/api/auth/get-me");
+    const response = await api.get("/auth/get-me");
 
     return response.data;
   } catch (error) {

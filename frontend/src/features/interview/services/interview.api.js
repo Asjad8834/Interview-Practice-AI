@@ -16,7 +16,7 @@ export const generateInterviewReport = async ({
     formData.append("selfDescription", selfDescription);
     formData.append("resume", resumeFile);
 
-    const response = await api.post("/api/interview", formData);
+    const response = await api.post("/interview", formData);
 
     return response.data;
   } catch (error) {
@@ -34,7 +34,7 @@ export const generateInterviewReport = async ({
 export const getInterviewReportById = async (interviewId) => {
   try {
     const response = await api.get(
-      `/api/interview/report/${interviewId}`
+      `/interview/report/${interviewId}`
     );
 
     return response.data;
@@ -52,7 +52,7 @@ export const getInterviewReportById = async (interviewId) => {
  */
 export const getAllInterviewReports = async () => {
   try {
-    const response = await api.get("/api/interview/reports");
+    const response = await api.get("/interview/reports");
 
     return response.data;
   } catch (error) {
@@ -70,7 +70,7 @@ export const getAllInterviewReports = async () => {
 export const generateResumePdf = async ({ interviewReportId }) => {
   try {
     const response = await api.post(
-      `/api/interview/resume/pdf/${interviewReportId}`,
+      `/interview/resume/pdf/${interviewReportId}`,
       null,
       {
         responseType: "blob",
