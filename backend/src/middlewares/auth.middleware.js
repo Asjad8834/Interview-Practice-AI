@@ -3,10 +3,15 @@ const tokenBlackListModel = require("../models/tokenBlackList.model");
 
 async function authUser(req, res, next) {
   try {
+
+    console.log("AUTH DEBUG:", {
+      hasCookieHeader: !!req.headers.cookie,
+      hasTokenCookie: !!req.cookies?.token,
+      origin: req.headers.origin,
+    });
+
     let token = req.cookies.token;
 
-    // If token is not available in cookies,
-    // try getting it from Authorization header
     if (!token && req.headers.authorization) {
       const authHeader = req.headers.authorization;
 
@@ -15,7 +20,6 @@ async function authUser(req, res, next) {
       }
     }
 
-    // No token found
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -23,10 +27,8 @@ async function authUser(req, res, next) {
       });
     }
 
-    // Check whether the token is blacklisted
-    const isTokenBlackListed = await tokenBlackListModel.findOne({
-      token,
-    });
+    const isTokenBlackListed =
+      await tokenBlackListModel.findOne({ token });
 
     if (isTokenBlackListed) {
       return res.status(401).json({
@@ -35,12 +37,15 @@ async function authUser(req, res, next) {
       });
     }
 
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
 
     req.user = decoded;
 
     next();
+
   } catch (error) {
     return res.status(500).json({
       success: false,
