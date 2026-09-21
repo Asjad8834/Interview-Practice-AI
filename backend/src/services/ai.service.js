@@ -728,22 +728,38 @@ END INPUT
 
 
 async function generatePdfFromHtml(htmlContent) {
+  console.log("Puppeteer executable:", puppeteer.executablePath());
+  
+  let browser;
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+    });
 
-  await page.setContent(htmlContent, {
-    waitUntil: "networkidle0"
-  });
+    const page = await browser.newPage();
 
-  const pdfBuffer = await page.pdf({
-    format: "A4"
-  });
+    await page.setContent(htmlContent, {
+      waitUntil: "networkidle0",
+    });
 
-  await browser.close();
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+    });
 
-  return pdfBuffer;
+    return pdfBuffer;
 
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
 }
 
 

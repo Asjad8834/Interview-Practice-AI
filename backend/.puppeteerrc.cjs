@@ -1,5 +1,8 @@
+const path = require("path");
+
 module.exports = {
-  cacheDirectory: "/opt/render/.cache/puppeteer",
+  cacheDirectory: path.join(__dirname, ".cache", "puppeteer"),
+
   chrome: {
     skipDownload: false,
   },
