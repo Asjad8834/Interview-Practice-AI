@@ -62,24 +62,7 @@ export const useInterview = () => {
     const getResumePdf = async (interviewReportId) => {
     setLoading(true)
 
-    let pdfWindow = null
-
     try {
-        // Detect iOS devices
-        const isIOS =
-            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (
-                navigator.platform === "MacIntel" &&
-                navigator.maxTouchPoints > 1
-            )
-
-        // Open the window immediately on iOS.
-        // This avoids Safari's popup blocker because this happens
-        // directly as a result of the user's click.
-        if (isIOS) {
-            pdfWindow = window.open("", "_blank")
-        }
-
         const response = await generateResumePdf({
             interviewReportId
         })
@@ -90,16 +73,20 @@ export const useInterview = () => {
 
         const url = window.URL.createObjectURL(blob)
 
+        const isIOS =
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (
+                navigator.platform === "MacIntel" &&
+                navigator.maxTouchPoints > 1
+            )
+
         if (isIOS) {
-            // Open the generated PDF in the already-opened tab
-            if (pdfWindow) {
-                pdfWindow.location.href = url
-            } else {
-                // Fallback if Safari blocked the new tab
-                window.location.href = url
-            }
+            // iOS Safari does not reliably support the download
+            // attribute for Blob URLs.
+            // Navigate directly to the generated PDF instead.
+            window.location.href = url
         } else {
-            // Desktop: download normally
+            // Desktop browsers: download normally.
             const link = document.createElement("a")
 
             link.href = url
@@ -112,7 +99,6 @@ export const useInterview = () => {
             link.click()
             document.body.removeChild(link)
 
-            // Give the browser time to start the download
             setTimeout(() => {
                 window.URL.revokeObjectURL(url)
             }, 1000)
@@ -120,15 +106,10 @@ export const useInterview = () => {
 
     } catch (error) {
         console.log("Error downloading resume PDF:", error)
-
-        if (pdfWindow && !pdfWindow.closed) {
-            pdfWindow.close()
-        }
     } finally {
         setLoading(false)
     }
 }
-
     useEffect(() => {
         if (interviewId) {
             getReportById(interviewId)
