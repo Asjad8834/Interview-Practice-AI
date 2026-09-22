@@ -477,3 +477,150 @@ $severity-low: #3fb950;
         border-color: rgba($severity-low, 0.25);
     }
 }
+
+// ── Mobile Responsive Layout ────────────────────────────────────────────────
+@media (max-width: 768px) {
+
+    .interview-page {
+        padding: 0.75rem;
+        min-height: 100vh;
+        align-items: flex-start;
+    }
+
+    .interview-layout {
+        width: 100%;
+        max-width: 100%;
+        flex-direction: column;
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    // ── Mobile Navigation ────────────────────────────────────────────────────
+    .interview-nav {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+
+    .nav-content {
+        width: 100%;
+    }
+
+    .interview-nav__label {
+        padding: 0 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .interview-nav__item {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    // Download button stays full width on mobile
+    .interview-nav .button {
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: center;
+    }
+
+    // ── Dividers become horizontal ───────────────────────────────────────────
+    .interview-divider {
+        width: 100%;
+        height: 1px;
+        flex-shrink: 0;
+    }
+
+    // ── Center Content ──────────────────────────────────────────────────────
+    .interview-content {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1.25rem 1rem;
+        max-height: none;
+        min-height: auto;
+        overflow: visible;
+    }
+
+    .content-header {
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+
+        h2 {
+            font-size: 1rem;
+        }
+
+        &__count {
+            flex-shrink: 0;
+            font-size: 0.7rem;
+        }
+    }
+
+    // ── Question Cards ──────────────────────────────────────────────────────
+    .q-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .q-card__header {
+        padding: 0.85rem;
+        gap: 0.5rem;
+    }
+
+    .q-card__question {
+        min-width: 0;
+        font-size: 0.85rem;
+        overflow-wrap: anywhere;
+    }
+
+    .q-card__body {
+        padding-left: 0.85rem;
+        padding-right: 0.85rem;
+    }
+
+    // ── Road Map ─────────────────────────────────────────────────────────────
+    .roadmap-list {
+        width: 100%;
+    }
+
+    .roadmap-day {
+        padding-left: 3rem;
+        padding-right: 0;
+    }
+
+    .roadmap-day__header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .roadmap-day__focus {
+        font-size: 0.9rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .roadmap-day__tasks li {
+        font-size: 0.8rem;
+    }
+
+    // ── Right Sidebar ───────────────────────────────────────────────────────
+    .interview-sidebar {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1.25rem 1rem;
+    }
+
+    .match-score {
+        width: 100%;
+    }
+
+    .skill-gaps__list {
+        width: 100%;
+    }
+
+    .skill-tag {
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
+    }
+}
