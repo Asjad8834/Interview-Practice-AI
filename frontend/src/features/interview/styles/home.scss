@@ -379,3 +379,127 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
         }
     }
 }
+
+
+// ── Mobile Responsive Layout ────────────────────────────────────────────────
+@media (max-width: 768px) {
+
+    .home-page {
+        padding: 2rem 1rem;
+        gap: 1.5rem;
+        justify-content: flex-start;
+    }
+
+    // Header
+    .page-header {
+        width: 100%;
+
+        h1 {
+            font-size: 1.8rem;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: 0.9rem;
+            max-width: 100%;
+        }
+    }
+
+    // Main card
+    .interview-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .interview-card__body {
+        flex-direction: column;
+        min-height: auto;
+    }
+
+    // Panels stack vertically
+    .panel {
+        width: 100%;
+        flex: none;
+        box-sizing: border-box;
+        padding: 1.25rem;
+
+        &--left {
+            min-height: 420px;
+        }
+
+        &--right {
+            min-height: auto;
+        }
+
+        &__textarea {
+            box-sizing: border-box;
+        }
+    }
+
+    // Change vertical divider into horizontal divider
+    .panel-divider {
+        width: 100%;
+        height: 1px;
+        flex-shrink: 0;
+    }
+
+    // Prevent header content from getting squeezed
+    .panel__header {
+        flex-wrap: wrap;
+
+        h2 {
+            min-width: 0;
+        }
+    }
+
+    // Keep badges from causing overflow
+    .badge {
+        flex-shrink: 0;
+    }
+
+    // Resume upload area
+    .dropzone {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    // Generate section
+    .interview-card__footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+
+        .footer-info {
+            text-align: center;
+        }
+    }
+
+    .generate-btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+
+    // Recent reports
+    .recent-reports {
+        width: 100%;
+
+        .reports-list {
+            flex-direction: column;
+
+            .report-item {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    }
+
+    // Footer
+    .page-footer {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
