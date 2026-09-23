@@ -60,56 +60,53 @@ export const useInterview = () => {
     }
 
     const getResumePdf = async (interviewReportId) => {
-    setLoading(true)
+    setLoading(true);
+
+    // Open the new window immediately from the user's click.
+    // This is important for iOS Safari because opening it after
+    // the async API call can be blocked.
+    const pdfWindow = window.open("", "_blank");
 
     try {
         const response = await generateResumePdf({
             interviewReportId
-        })
+        });
 
         const blob = new Blob([response], {
             type: "application/pdf"
-        })
+        });
 
-        const url = window.URL.createObjectURL(blob)
+        const url = window.URL.createObjectURL(blob);
 
-        const isIOS =
-            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (
-                navigator.platform === "MacIntel" &&
-                navigator.maxTouchPoints > 1
-            )
-
-        if (isIOS) {
-            // iOS Safari does not reliably support the download
-            // attribute for Blob URLs.
-            // Navigate directly to the generated PDF instead.
-            window.location.href = url
+        if (pdfWindow) {
+            pdfWindow.location.href = url;
         } else {
-            // Desktop browsers: download normally.
-            const link = document.createElement("a")
-
-            link.href = url
-            link.setAttribute(
-                "download",
-                `resume_${interviewReportId}.pdf`
-            )
-
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-
-            setTimeout(() => {
-                window.URL.revokeObjectURL(url)
-            }, 1000)
+            // Fallback if Safari blocked the new window
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `resume_${interviewReportId}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
+        // Give Safari time to load the PDF before releasing the Blob URL.
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+        }, 60000);
+
     } catch (error) {
-        console.log("Error downloading resume PDF:", error)
+        console.log("Error downloading resume PDF:", error);
+
+        // If generation fails, close the blank tab we opened.
+        if (pdfWindow && !pdfWindow.closed) {
+            pdfWindow.close();
+        }
     } finally {
-        setLoading(false)
+        setLoading(false);
     }
-}
+};
+
     useEffect(() => {
         if (interviewId) {
             getReportById(interviewId)
