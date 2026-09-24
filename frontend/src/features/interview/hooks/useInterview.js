@@ -62,12 +62,8 @@ export const useInterview = () => {
     const getResumePdf = async (interviewReportId) => {
     setLoading(true);
 
-    // Open the new window immediately from the user's click.
-    // This is important for iOS Safari because opening it after
-    // the async API call can be blocked.
-    const pdfWindow = window.open("", "_blank");
-
     try {
+        // Wait until the PDF is completely generated
         const response = await generateResumePdf({
             interviewReportId
         });
@@ -78,30 +74,28 @@ export const useInterview = () => {
 
         const url = window.URL.createObjectURL(blob);
 
-        if (pdfWindow) {
-            pdfWindow.location.href = url;
-        } else {
-            // Fallback if Safari blocked the new window
+        // Open the PDF only after generation is complete
+        const pdfWindow = window.open(url, "_blank");
+
+        // Fallback if the browser blocks the new tab
+        if (!pdfWindow) {
             const link = document.createElement("a");
             link.href = url;
-            link.download = `resume_${interviewReportId}.pdf`;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // Give Safari time to load the PDF before releasing the Blob URL.
+        // Keep the Blob URL alive long enough for the PDF viewer
         setTimeout(() => {
             window.URL.revokeObjectURL(url);
         }, 60000);
 
     } catch (error) {
-        console.log("Error downloading resume PDF:", error);
-
-        // If generation fails, close the blank tab we opened.
-        if (pdfWindow && !pdfWindow.closed) {
-            pdfWindow.close();
-        }
+        console.error("Error downloading resume PDF:", error);
     } finally {
         setLoading(false);
     }
