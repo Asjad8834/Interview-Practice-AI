@@ -748,23 +748,43 @@ async function generateResumePdf({
     throw new Error("Self description is required");
   }
 
-  // Generate HTML using Gemini
+  const resumePdfSchema = z.object({
+    html: z.string().describe(
+      "The HTML content of the resume PDF."
+    )
+  });
+
+  const prompt = `
+    Generate a professional ATS-friendly resume in HTML.
+
+    Resume:
+    ${resume}
+
+    Self Description:
+    ${selfDescription}
+
+    Job Description:
+    ${jobDescription}
+  `;
+
+  // THIS is where it goes
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
       responseJsonSchema: zodToJsonSchema(resumePdfSchema),
-    }
+    },
   });
 
   const jsonContent = JSON.parse(response.text);
 
-  // Convert generated HTML → PDF
   const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
 
   return pdfBuffer;
 }
+
+
 module.exports = {
   generateInterviewReport,
   generateResumePdf
