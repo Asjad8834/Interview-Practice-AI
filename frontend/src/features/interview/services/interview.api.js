@@ -79,10 +79,16 @@ export const generateResumePdf = async ({ interviewReportId }) => {
 
     return response.data;
   } catch (error) {
-    console.error(
-      "Error generating resume PDF:",
-      error.response?.data || error.message
-    );
+    if (error.response?.data instanceof Blob) {
+      const errorText = await error.response.data.text();
+      console.error("PDF BACKEND ERROR:", errorText);
+    } else {
+      console.error(
+        "PDF ERROR:",
+        error.response?.data || error.message
+      );
+    }
+
     throw error;
   }
 };
