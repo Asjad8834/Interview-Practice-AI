@@ -731,36 +731,40 @@ async function generatePdfFromHtml(htmlContent) {
 }
 
 
-async function generateResumePdf({ interviewReportId }){
-  try {
-    const response = await api.post(
-      `/interview/resume/pdf/${interviewReportId}`,
-      null,
-      {
-        responseType: "blob",
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    if (error.response?.data instanceof Blob) {
-      const errorText = await error.response.data.text();
-
-      console.error(
-        "PDF BACKEND ERROR:",
-        errorText
-      );
-    } else {
-      console.error(
-        "PDF ERROR:",
-        error.response?.data || error.message
-      );
-    }
-
-    throw error;
+async function generateResumePdf({
+  selfDescription,
+  resume,
+  jobDescription
+}) {
+  if (!resume) {
+    throw new Error("Resume is required");
   }
-};
 
+  if (!jobDescription) {
+    throw new Error("Job description is required");
+  }
+
+  if (!selfDescription) {
+    throw new Error("Self description is required");
+  }
+
+  // Generate HTML using Gemini
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: zodToJsonSchema(resumePdfSchema),
+    }
+  });
+
+  const jsonContent = JSON.parse(response.text);
+
+  // Convert generated HTML → PDF
+  const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
+
+  return pdfBuffer;
+}
 module.exports = {
   generateInterviewReport,
   generateResumePdf
