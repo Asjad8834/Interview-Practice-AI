@@ -63,33 +63,29 @@ export const useInterview = () => {
     setLoading(true);
 
     try {
-        // Wait until the PDF is completely generated
+        // Generate the PDF first
         const response = await generateResumePdf({
-            interviewReportId
+            interviewReportId,
         });
 
+        // Convert response to PDF Blob
         const blob = new Blob([response], {
-            type: "application/pdf"
+            type: "application/pdf",
         });
 
+        // Create a temporary URL for the PDF
         const url = window.URL.createObjectURL(blob);
 
-        // Open the PDF only after generation is complete
+        // Try to open the PDF in a new tab
         const pdfWindow = window.open(url, "_blank");
 
-        // Fallback if the browser blocks the new tab
         if (!pdfWindow) {
-            const link = document.createElement("a");
-            link.href = url;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Popup was blocked.
+            // Open the PDF in the current tab instead.
+            window.location.href = url;
         }
 
-        // Keep the Blob URL alive long enough for the PDF viewer
+        // Keep the URL alive while the browser loads the PDF
         setTimeout(() => {
             window.URL.revokeObjectURL(url);
         }, 60000);
