@@ -728,8 +728,60 @@ END INPUT
 
 
 async function generatePdfFromHtml(htmlContent) {
-}
+  let browser;
 
+  try {
+    console.log("Starting Puppeteer PDF generation...");
+
+    browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+    });
+
+    console.log("Browser launched");
+
+    const page = await browser.newPage();
+
+    await page.setContent(htmlContent, {
+      waitUntil: "domcontentloaded",
+      timeout: 30000,
+    });
+
+    console.log("HTML loaded");
+
+    await page.evaluate(async () => {
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+    });
+
+    console.log("Fonts loaded");
+
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px",
+      },
+    });
+
+    console.log("PDF generated successfully");
+
+    return pdfBuffer;
+  } finally {
+    if (browser) {
+      await browser.close();
+      console.log("Browser closed");
+    }
+  }
+}
 
 async function generateResumePdf({
   selfDescription,
